@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "TP_WeaponComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -15,7 +16,6 @@
 AGitExampleCharacter::AGitExampleCharacter()
 {
 	// Character doesnt have a rifle at start
-	bHasRifle = false;
 	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -99,12 +99,12 @@ void AGitExampleCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AGitExampleCharacter::SetHasRifle(bool bNewHasRifle)
+void AGitExampleCharacter::SetRifle_Implementation(UTP_WeaponComponent* Rifle)
 {
-	bHasRifle = bNewHasRifle;
+	Weapon = Rifle;
 }
 
 bool AGitExampleCharacter::GetHasRifle()
 {
-	return bHasRifle;
+	return IsValid(Weapon);
 }

@@ -9,6 +9,7 @@
 
 class UInputComponent;
 class USkeletalMeshComponent;
+class UTP_WeaponComponent;
 class USceneComponent;
 class UCameraComponent;
 class UAnimMontage;
@@ -54,11 +55,11 @@ public:
 
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
-	bool bHasRifle;
+	UTP_WeaponComponent* Weapon = nullptr;
 
 	/** Setter to set the bool */
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void SetHasRifle(bool bNewHasRifle);
+	UFUNCTION(BlueprintNativeEvent, Category = Weapon)
+	void SetRifle(UTP_WeaponComponent* Rifle);
 
 	/** Getter for the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
