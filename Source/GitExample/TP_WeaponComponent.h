@@ -8,6 +8,8 @@
 
 class AGitExampleCharacter;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAmmoQuantityChanged)
+
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GITEXAMPLE_API UTP_WeaponComponent : public USkeletalMeshComponent
 {
@@ -38,6 +40,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* FireAction;
 
+	/** Reload Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* ReloadAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	int32 MaxAmmo = 6;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure=false)
+	void GetAmmoInfo(int32& OutCurrentAmmo, int32& OutMaxAmmo) const;
+
 	/** Sets default values for this component's properties */
 	UTP_WeaponComponent();
 
@@ -49,10 +61,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
 
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void Reload();
+
+	FOnAmmoQuantityChanged OnAmmoQuantityChanged;
 protected:
 	/** Ends gameplay for this component. */
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	int32 CurrentAmmo = 0;
 
 private:
 	/** The Character holding this weapon*/

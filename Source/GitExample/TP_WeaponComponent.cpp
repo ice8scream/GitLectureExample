@@ -10,17 +10,30 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+void UTP_WeaponComponent::GetAmmoInfo(int32& OutCurrentAmmo, int32& OutMaxAmmo) const
+{
+	OutCurrentAmmo = CurrentAmmo;
+	OutMaxAmmo = MaxAmmo;
+}
+
 // Sets default values for this component's properties
 UTP_WeaponComponent::UTP_WeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
 	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
+
+	Reload();
 }
 
 
 void UTP_WeaponComponent::Fire()
 {
 	if (Character == nullptr || Character->GetController() == nullptr)
+	{
+		return;
+	}
+
+	if (CurrentAmmo <= 0)
 	{
 		return;
 	}
@@ -43,6 +56,9 @@ void UTP_WeaponComponent::Fire()
 			// Spawn the projectile at the muzzle
 			World->SpawnActor<AGitExampleProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 		}
+
+		CurrentAmmo--;
+		OnAmmoQuantityChanged.Broadcast();
 	}
 	
 	// Try and play the sound if specified
@@ -61,6 +77,12 @@ void UTP_WeaponComponent::Fire()
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
+}
+
+void UTP_WeaponComponent::Reload()
+{
+	CurrentAmmo = MaxAmmo;
+	OnAmmoQuantityChanged.Broadcast();
 }
 
 void UTP_WeaponComponent::AttachWeapon(AGitExampleCharacter* TargetCharacter)
@@ -91,6 +113,12 @@ void UTP_WeaponComponent::AttachWeapon(AGitExampleCharacter* TargetCharacter)
 		{
 			// Fire
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
+		}
+
+		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
+		{
+			// Reload
+			EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Reload);
 		}
 	}
 }
